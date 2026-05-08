@@ -17,7 +17,7 @@ async function bootstrap() {
     await fastify.register(healthRoutes);
     await fastify.register(tripRoutes, { prefix: '/trips' });
 
-    const port = process.env.PORT ? parseInt(process.env.PORT) : 3001;
+    const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
     const host = '0.0.0.0';
 
     await fastify.listen({ port, host });
