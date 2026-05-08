@@ -24,6 +24,9 @@ RaahiRoute is an iterative travel planning application built with modern technol
    ```
 3. Access the frontend at `http://localhost:3000`.
 
+### Deployment (Google Cloud)
+This project uses `cloudbuild.yaml` to handle building the monorepo services. Ensure your Cloud Build trigger is configured to use "Cloud Build configuration file (yaml or json)".
+
 ## Phase 1 Status: COMPLETED
 - [x] Basic Fastify backend with Health and Trip APIs.
 - [x] Next.js frontend with Homepage and Trip Form.
