@@ -1,3 +1,4 @@
+// RaahiRoute Backend - Phase 1 MVP
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { tripRoutes } from './routes/trips';
