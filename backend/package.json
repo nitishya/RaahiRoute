@@ -15,12 +15,15 @@
   "type": "commonjs",
   "dependencies": {
     "@fastify/cors": "^11.2.0",
+    "@fastify/jwt": "^10.0.0",
     "@prisma/client": "^7.8.0",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
     "fastify": "^5.8.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^25.6.2",
     "prisma": "^7.8.0",
     "ts-node-dev": "^2.0.0",

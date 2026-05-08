@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import prisma from '../lib/prisma';
 
@@ -10,10 +10,20 @@ const createTripSchema = z.object({
 });
 
 export async function tripRoutes(fastify: FastifyInstance) {
+  // Authentication pre-handler
+  fastify.addHook('preHandler', async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      await request.jwtVerify();
+    } catch (err) {
+      reply.status(401).send({ message: 'Unauthorized' });
+    }
+  });
+
   // GET /trips
-  fastify.get('/', async () => {
+  fastify.get('/', async (request) => {
     try {
       const trips = await prisma.trip.findMany({
+        where: { userId: request.user.userId },
         orderBy: { createdAt: 'desc' },
       });
       return trips;
@@ -28,7 +38,10 @@ export async function tripRoutes(fastify: FastifyInstance) {
     try {
       const validatedData = createTripSchema.parse(request.body);
       const trip = await prisma.trip.create({
-        data: validatedData,
+        data: {
+          ...validatedData,
+          userId: request.user.userId,
+        },
       });
       return reply.status(201).send(trip);
     } catch (error) {

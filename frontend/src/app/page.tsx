@@ -1,16 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import TripForm from '@/components/TripForm';
 import TripCard from '@/components/TripCard';
 import TripSkeleton from '@/components/ui/Skeleton';
 import { fetchTrips } from '@/lib/api';
 import { Trip } from '@/types/trip';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
   const [trips, setTrips] = useState<Trip[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [tripsLoading, setTripsLoading] = useState(true);
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const router = useRouter();
 
   const loadTrips = async () => {
     try {
@@ -19,13 +23,25 @@ export default function Home() {
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false);
+      setTripsLoading(false);
     }
   };
 
   useEffect(() => {
-    loadTrips();
-  }, []);
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+    } else if (isAuthenticated) {
+      loadTrips();
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  if (authLoading || (!isAuthenticated && !authLoading)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pb-20">
@@ -50,14 +66,14 @@ export default function Home() {
           <div className="lg:w-2/3">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-slate-900">Upcoming Trips</h2>
-              {!loading && trips.length > 0 && (
+              {!tripsLoading && trips.length > 0 && (
                 <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-sm font-bold">
                   {trips.length} Total
                 </span>
               )}
             </div>
 
-            {loading ? (
+            {tripsLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[1, 2, 3, 4].map((i) => (
                   <TripSkeleton key={i} />

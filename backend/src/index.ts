@@ -1,21 +1,36 @@
-// RaahiRoute Backend - Phase 1 MVP
+// RaahiRoute Backend - Phase 3 Authentication
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import jwt from '@fastify/jwt';
 import { tripRoutes } from './routes/trips';
 import { healthRoutes } from './routes/health';
+import { authRoutes } from './routes/auth';
 
 const fastify = Fastify({
   logger: true,
 });
 
+// TypeScript augmentation for JWT
+declare module '@fastify/jwt' {
+  interface FastifyJWT {
+    payload: { userId: string; email: string };
+    user: { userId: string; email: string };
+  }
+}
+
 async function bootstrap() {
-  console.log('Starting RaahiRoute backend...');
+  console.log('Starting RaahiRoute backend with Auth...');
   try {
     await fastify.register(cors, {
       origin: true,
     });
 
+    await fastify.register(jwt, {
+      secret: process.env.JWT_SECRET || 'super-secret-key-change-this-in-production',
+    });
+
     await fastify.register(healthRoutes);
+    await fastify.register(authRoutes, { prefix: '/auth' });
     await fastify.register(tripRoutes, { prefix: '/trips' });
 
     const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
