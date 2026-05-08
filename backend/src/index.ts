@@ -9,6 +9,7 @@ const fastify = Fastify({
 });
 
 async function bootstrap() {
+  console.log('Starting RaahiRoute backend...');
   try {
     await fastify.register(cors, {
       origin: true,
