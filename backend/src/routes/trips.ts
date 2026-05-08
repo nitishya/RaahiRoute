@@ -33,7 +33,7 @@ export async function tripRoutes(fastify: FastifyInstance) {
       return reply.status(201).send(trip);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return reply.status(400).send({ message: 'Validation failed', errors: error.errors });
+        return reply.status(400).send({ message: 'Validation failed', errors: error.issues });
       }
       fastify.log.error(error);
       return reply.status(500).send({ message: 'Internal server error' });
