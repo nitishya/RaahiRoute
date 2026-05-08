@@ -9,6 +9,7 @@ WORKDIR /app
 # Copy backend files
 COPY backend/package*.json ./
 COPY backend/prisma ./prisma/
+COPY backend/prisma.config.ts ./
 
 RUN npm install
 
