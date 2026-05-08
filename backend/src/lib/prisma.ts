@@ -1,11 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
-});
+/**
+ * Prisma 7 Client instantiation.
+ * It will automatically pick up DATABASE_URL from the environment.
+ */
+const prisma = new PrismaClient();
 
 export default prisma;
