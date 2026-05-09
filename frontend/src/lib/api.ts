@@ -1,6 +1,6 @@
 const API_URL = '/api';
 
-function getAuthHeader() {
+function getAuthHeader(): Record<string, string> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   return token ? { 'Authorization': `Bearer ${token}` } : {};
 }
