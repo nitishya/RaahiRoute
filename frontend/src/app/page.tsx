@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import TripForm from '@/components/TripForm';
 import TripCard from '@/components/TripCard';
@@ -14,7 +14,6 @@ export default function Home() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [tripsLoading, setTripsLoading] = useState(true);
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const router = useRouter();
 
   const loadTrips = async () => {
     try {
@@ -28,14 +27,12 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push('/login');
-    } else if (isAuthenticated) {
+    if (isAuthenticated) {
       loadTrips();
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, [isAuthenticated]);
 
-  if (authLoading || (!isAuthenticated && !authLoading)) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
@@ -43,8 +40,57 @@ export default function Home() {
     );
   }
 
+  // Public Landing Page
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Navbar />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
+          <div className="text-center space-y-8 max-w-3xl mx-auto">
+            <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight">
+              Design Your <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-500">
+                Perfect Getaway
+              </span>
+            </h1>
+            <p className="text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto">
+              RaahiRoute is your intelligent travel companion. Plan itineraries, manage budgets, and organize all your upcoming adventures in one beautiful place.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
+              <Link
+                href="/signup"
+                className="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-indigo-200 transition-all hover:-translate-y-1"
+              >
+                Start Planning Free
+              </Link>
+              <Link
+                href="/login"
+                className="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 hover:text-slate-900 border border-slate-200 rounded-xl font-bold text-lg shadow-sm transition-all hover:-translate-y-1 hover:border-slate-300"
+              >
+                Sign In
+              </Link>
+            </div>
+            
+            {/* Feature preview / Mockup placeholder */}
+            <div className="mt-20 relative mx-auto w-full max-w-4xl rounded-2xl bg-white shadow-2xl p-2 border border-slate-100 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-50/80 to-transparent pointer-events-none z-10" />
+              <div className="glass-card p-8 rounded-xl opacity-80 scale-95 origin-top filter blur-[1px]">
+                 <div className="h-8 w-1/3 bg-slate-200 rounded mb-6 animate-pulse" />
+                 <div className="grid grid-cols-2 gap-4">
+                   <div className="h-32 bg-slate-100 rounded-lg animate-pulse" />
+                   <div className="h-32 bg-slate-100 rounded-lg animate-pulse" />
+                 </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Authenticated Dashboard
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen pb-20 bg-slate-50">
       <Navbar />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
