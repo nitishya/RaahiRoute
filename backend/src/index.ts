@@ -5,6 +5,8 @@ import jwt from '@fastify/jwt';
 import { tripRoutes } from './routes/trips';
 import { healthRoutes } from './routes/health';
 import { authRoutes } from './routes/auth';
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
 
 // TypeScript augmentation for JWT
 declare module '@fastify/jwt' {
@@ -21,6 +23,20 @@ export async function buildApp() {
 
   await fastify.register(cors, {
     origin: true,
+  });
+
+  await fastify.register(swagger, {
+    openapi: {
+      info: {
+        title: 'RaahiRoute API',
+        description: 'Travel planning application backend API',
+        version: '1.0.0',
+      },
+    },
+  });
+
+  await fastify.register(swaggerUi, {
+    routePrefix: '/docs',
   });
 
   await fastify.register(jwt, {

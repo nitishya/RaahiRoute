@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "start": "if [ -n \"$DATABASE_URL\" ]; then npx prisma migrate deploy; fi && node dist/index.js",
     "build": "tsc",
-    "test": "vitest run"
+    "test": "vitest run src/"
   },
   "keywords": [],
   "author": "",
@@ -16,12 +16,15 @@
   "dependencies": {
     "@fastify/cors": "^11.2.0",
     "@fastify/jwt": "^10.0.0",
+    "@fastify/swagger": "^9.7.0",
+    "@fastify/swagger-ui": "^5.2.6",
     "@google/generative-ai": "^0.24.1",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
     "fastify": "^5.8.5",
+    "ioredis": "^5.10.1",
     "pg": "^8.20.0",
     "zod": "^4.4.3"
   },

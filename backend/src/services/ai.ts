@@ -1,9 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getCachedData, setCachedData } from "../lib/redis";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export async function getTravelRecommendations(destination: string, budget: number) {
+  const cacheKey = `recommendations:${destination.toLowerCase().replace(/\s+/g, '-')}:${budget}`;
+  const cached = await getCachedData(cacheKey);
+  if (cached) return cached;
+
   if (!process.env.GEMINI_API_KEY) {
     throw new Error("GEMINI_API_KEY is not configured");
   }
@@ -17,9 +22,10 @@ export async function getTravelRecommendations(destination: string, budget: numb
   const text = response.text();
   
   try {
-    // Extract JSON from text (sometimes Gemini wraps it in ```json)
     const jsonStr = text.match(/\[.*\]/s)?.[0] || text;
-    return JSON.parse(jsonStr);
+    const data = JSON.parse(jsonStr);
+    await setCachedData(cacheKey, data);
+    return data;
   } catch (err) {
     console.error("Failed to parse AI response:", text);
     return [text]; // Fallback to raw text if JSON parsing fails
@@ -27,6 +33,10 @@ export async function getTravelRecommendations(destination: string, budget: numb
 }
 
 export async function getTripItinerary(destination: string, days: number, budget: number) {
+  const cacheKey = `itinerary:${destination.toLowerCase().replace(/\s+/g, '-')}:${days}:${budget}`;
+  const cached = await getCachedData(cacheKey);
+  if (cached) return cached;
+
   if (!process.env.GEMINI_API_KEY) {
     throw new Error("GEMINI_API_KEY is not configured");
   }
@@ -41,7 +51,9 @@ export async function getTripItinerary(destination: string, days: number, budget
 
   try {
     const jsonStr = text.match(/\[.*\]/s)?.[0] || text;
-    return JSON.parse(jsonStr);
+    const data = JSON.parse(jsonStr);
+    await setCachedData(cacheKey, data);
+    return data;
   } catch (err) {
     console.error("Failed to parse AI itinerary:", text);
     return [{ day: 1, activities: [text] }];
