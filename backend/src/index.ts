@@ -31,6 +31,17 @@ export async function buildApp() {
   await fastify.register(authRoutes, { prefix: '/auth' });
   await fastify.register(tripRoutes, { prefix: '/trips' });
 
+  // Root route to prevent 404 on Cloud Run base URL
+  fastify.get('/', async () => {
+    return { 
+      name: 'RaahiRoute API', 
+      status: 'running',
+      version: '1.0.0',
+      message: 'Welcome to the RaahiRoute Backend API. Please use the frontend application to interact with this service.'
+    };
+  });
+
+
   return fastify;
 }
 
