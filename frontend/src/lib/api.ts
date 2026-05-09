@@ -58,3 +58,19 @@ export async function login(data: any) {
   if (!res.ok) throw new Error(result.message || 'Login failed');
   return result;
 }
+
+export async function fetchRecommendations(tripId: string) {
+  const res = await fetch(`${API_URL}/trips/${tripId}/recommendations`, {
+    headers: { ...getAuthHeader() }
+  });
+  if (!res.ok) throw new Error('Failed to fetch recommendations');
+  return res.json();
+}
+
+export async function fetchItinerary(tripId: string) {
+  const res = await fetch(`${API_URL}/trips/${tripId}/itinerary`, {
+    headers: { ...getAuthHeader() }
+  });
+  if (!res.ok) throw new Error('Failed to fetch itinerary');
+  return res.json();
+}

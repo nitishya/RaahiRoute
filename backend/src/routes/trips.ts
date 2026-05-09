@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import prisma from '../lib/prisma';
+import { getTravelRecommendations, getTripItinerary } from '../services/ai';
 
 const createTripSchema = z.object({
   destination: z.string().min(1),
@@ -50,6 +51,49 @@ export async function tripRoutes(fastify: FastifyInstance) {
       }
       fastify.log.error(error);
       return reply.status(500).send({ message: 'Internal server error' });
+    }
+  });
+
+  // GET /trips/:id/recommendations
+  fastify.get('/:id/recommendations', async (request, reply) => {
+    try {
+      const { id } = request.params as { id: string };
+      const trip = await prisma.trip.findUnique({
+        where: { id, userId: request.user.userId }
+      });
+
+      if (!trip) {
+        return reply.status(404).send({ message: 'Trip not found' });
+      }
+
+      const recommendations = await getTravelRecommendations(trip.destination, trip.budget);
+      return recommendations;
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.status(500).send({ message: 'Failed to fetch recommendations' });
+    }
+  });
+
+  // GET /trips/:id/itinerary
+  fastify.get('/:id/itinerary', async (request, reply) => {
+    try {
+      const { id } = request.params as { id: string };
+      const trip = await prisma.trip.findUnique({
+        where: { id, userId: request.user.userId }
+      });
+
+      if (!trip) {
+        return reply.status(404).send({ message: 'Trip not found' });
+      }
+
+      const diffTime = Math.abs(trip.endDate.getTime() - trip.startDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+      const itinerary = await getTripItinerary(trip.destination, diffDays, trip.budget);
+      return itinerary;
+    } catch (error) {
+      fastify.log.error(error);
+      return reply.status(500).send({ message: 'Failed to generate itinerary' });
     }
   });
 }

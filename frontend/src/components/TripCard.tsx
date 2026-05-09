@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { Trip } from '@/types/trip';
+import TripAI from './TripAI';
 
 interface TripCardProps {
   trip: Trip;
 }
 
 export default function TripCard({ trip }: TripCardProps) {
+  const [showAI, setShowAI] = useState(false);
+
   const startDate = new Date(trip.startDate).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -17,7 +21,7 @@ export default function TripCard({ trip }: TripCardProps) {
   });
 
   return (
-    <div className="glass-card p-5 rounded-2xl group hover:translate-y-[-4px] transition-all duration-300">
+    <div className="glass-card p-5 rounded-3xl group hover:translate-y-[-4px] transition-all duration-300">
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <h3 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
@@ -43,13 +47,18 @@ export default function TripCard({ trip }: TripCardProps) {
             +
           </div>
         </div>
-        <button className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center group/btn">
-          View Details
-          <svg className="w-4 h-4 ml-1 transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button 
+          onClick={() => setShowAI(!showAI)}
+          className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center group/btn"
+        >
+          {showAI ? 'Hide AI Tips' : 'View AI Tips'}
+          <svg className={`w-4 h-4 ml-1 transform transition-transform ${showAI ? 'rotate-90' : 'group-hover/btn:translate-x-1'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
+
+      {showAI && <TripAI tripId={trip.id} />}
     </div>
   );
 }
